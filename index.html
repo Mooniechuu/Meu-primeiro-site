@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-br"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudo - Home</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@300;400&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --rosa-claro: #fdf2f5;
+            --rosa-principal: #ffb7c5;
+            --marrom-suave: #8b5e5e;
+            --borda-rendada: #f9d8e0;
+        }
+
+        body {
+            background-color: #fcf8f9;
+            background-image: radial-gradient(#f9d8e0 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Poppins', sans-serif;
+            color: var(--marrom-suave);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .cartao-principal {
+            background: white;
+            max-width: 800px;
+            width: 100%;
+            border: 8px solid var(--rosa-claro);
+            border-radius: 50px;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(249, 216, 224, 0.5);
+            text-align: center;
+            position: relative;
+        }
+
+        header {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: var(--rosa-principal);
+            margin-bottom: 10px;
+        }
+
+        .subtitulo {
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .divisor {
+            height: 20px;
+            background-image: radial-gradient(circle at 10px 10px, var(--borda-rendada) 5px, transparent 5px);
+            background-size: 20px 20px;
+            margin: 20px 0;
+        }
+
+        .instrucoes {
+            background: var(--rosa-claro);
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px dashed var(--rosa-principal);
+            margin-bottom: 30px;
+        }
+
+        .menu-botoes {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .botao-item {
+            background: white;
+            border: 2px solid var(--rosa-claro);
+            padding: 15px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: var(--marrom-suave);
+            font-weight: bold;
+            transition: 0.3s;
+            box-shadow: 0 4px 0px var(--rosa-claro);
+        }
+
+        .botao-item:hover {
+            background: var(--rosa-claro);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 0px var(--rosa-principal);
+        }
+
+        .hero-icon {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            position: absolute;
+            top: 24px;
+            left: 150px;
+            margin: 0;
+        }
+
+        .insta-footer a {
+            color: var(--rosa-principal);
+            text-decoration: none;
+            border-bottom: 1px pink solid;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cartao-principal">
+        <img src="coracao.webp" alt="Imagem de coração" class="hero-icon">
+        <header>Seja Bem-vindo</header>
+        <div class="subtitulo">planeje seu futuro com doçura</div>
+        <div class="divisor"></div>
+        <div class="instrucoes"><strong>Como usar:</strong><br>
+            1. Clique no botâo "Checklist" para criar suas listas de tarefas.<br>
+            2. Use o "Bloco de Notas" para anotar ideias, pensamentos ou lembretes.<br>
+        </div>
+        <div class="menu-botoes">
+            <a href="checklist.html" class="botao-item">Checklist</a>
+            <a href="cronograma.html" class="botao-item">Cronograma</a>
+            <a href="bloco-de-notas.html" class="botao-item">Bloco de Notas</a>
+        </div>
+        <div class="divisor"></div>
+        <div class="insta-footer">feito com ♡ por <a href="https://www.instagram.com/isabellechristinereis"
+                target="_blank">@isabellechristinereis</a></div>
+    </div>
+</body>
+
+</html>

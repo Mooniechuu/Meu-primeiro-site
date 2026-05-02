@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudo - Checklist</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --rosa-fundo: #fdf2f5;
+            --rosa-principal: #ffb7c5;
+            --marrom-suave: #8b5e5e;
+            --branco: #ffffff;
+            --cinza-claro: #eee;
+        }
+
+        html {
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: #fcf8f9;
+            background-image: radial-gradient(#f9d8e0 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Poppins', sans-serif;
+            color: var(--marrom-suave);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px 70px;
+            height: 100%;
+            overflow: auto;
+        }
+
+        .titulo-topo {
+            background-color: var(--branco);
+            color: var(--rosa-principal);
+            font-weight: 600;
+            font-size: 2rem;
+            padding: 10px 60px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(255, 183, 197, 0.3);
+        }
+
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1100px;
+            width: 100%;
+            align-items: start;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--branco);
+            border-radius: 40px;
+            padding: 20px;
+            min-height: 240px;
+            max-height: 520px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.02);
+            border: 2px solid var(--rosa-fundo);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .card-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .card-content::-webkit-scrollbar-track {
+            background: #fffafa;
+            border-radius: 10px;
+        }
+
+        .card-content::-webkit-scrollbar-thumb {
+            background: var(--rosa-principal);
+            border-radius: 10px;
+        }
+
+        .card-content::-webkit-scrollbar-thumb:hover {
+            background: #e89bb0;
+        }
+
+        .card h2 {
+            font-size: 1.6rem;
+            margin: 0 0 15px 0;
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid var(--rosa-fundo);
+            padding-bottom: 10px;
+            padding-right: 25px;
+        }
+
+        /* Subtítulos e Itens */
+        .secao-subtitulo {
+            margin-top: 15px;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 25px;
+            background: #fffafa;
+            border: 1px dashed var(--rosa-principal);
+            position: relative;
+        }
+
+        .secao-subtitulo h3 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.4rem;
+            color: var(--rosa-principal);
+            margin: 5px 0;
+            padding-right: 25px;
+        }
+
+        .input-item-group {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .input-item-group input {
+            flex: 1;
+            border: 1px solid var(--rosa-fundo);
+            border-radius: 10px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            outline: none;
+        }
+
+        .btn-add-item {
+            background: var(--rosa-principal);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            padding: 0 12px;
+            font-weight: bold;
+        }
+
+        .item-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .item-check input[type="checkbox"] {
+            accent-color: var(--rosa-principal);
+            cursor: pointer;
+        }
+
+        /* Botões de Excluir */
+        .btn-del {
+            background: none;
+            border: none;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.3s;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .btn-del:hover {
+            color: var(--rosa-principal);
+        }
+
+        .del-card {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.8rem;
+        }
+
+        .del-sub {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+        }
+
+        .del-tarefa {
+            margin-left: auto;
+            font-size: 1rem;
+        }
+
+        .btn-novo-subtitulo {
+            background: none;
+            border: 2px solid var(--rosa-principal);
+            color: var(--rosa-principal);
+            border-radius: 20px;
+            padding: 8px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: 0.3s;
+            flex-shrink: 0;
+        }
+
+        .btn-novo-subtitulo:hover {
+            background: var(--rosa-principal);
+            color: white;
+        }
+
+        /* Modais */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 183, 197, 0.4);
+            backdrop-filter: blur(3px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Modal Coração (Adicionar) */
+        .coracao-form {
+            background: var(--branco);
+            width: 320px;
+            height: 320px;
+            position: relative;
+            transform: rotate(-45deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(255, 183, 197, 0.4);
+        }
+
+        .coracao-form::before,
+        .coracao-form::after {
+            content: "";
+            background-color: var(--branco);
+            border-radius: 50%;
+            width: 320px;
+            height: 320px;
+            position: absolute;
+        }
+
+        .coracao-form::before {
+            top: -160px;
+            left: 0;
+        }
+
+        .coracao-form::after {
+            left: 160px;
+            top: 0;
+        }
+
+        .conteudo-modal {
+            position: relative;
+            z-index: 10;
+            transform: rotate(45deg);
+            text-align: center;
+            width: 85%;
+        }
+
+        .conteudo-modal input {
+            width: 90%;
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid var(--rosa-principal);
+            border-radius: 15px;
+            outline: none;
+            text-align: center;
+        }
+
+        /* Modal Apagar (Quadrado) */
+        .modal-apagar {
+            background: var(--branco);
+            padding: 40px;
+            border-radius: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            border: 3px solid var(--rosa-fundo);
+        }
+
+        .lixeira-rosa {
+            font-size: 4rem;
+            color: var(--rosa-principal);
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .botoes-confirmacao {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .btn-confirmar {
+            background: var(--rosa-principal);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            min-width: 100px;
+            transition: 0.3s;
+        }
+
+        .btn-cancelar {
+            background: #f5f5f5;
+            color: #999;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            min-width: 100px;
+        }
+
+        .btn-confirmar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 10px rgba(255, 183, 197, 0.4);
+        }
+
+        .card-add-novo {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 3px dashed var(--rosa-principal);
+            background: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            min-height: 240px;
+            max-height: 420px;
+            border-radius: 40px;
+            transition: 0.3s;
+        }
+
+        .card-add-novo:hover {
+            background: var(--branco);
+            transform: translateY(-5px);
+        }
+
+        .editavel-inline:hover {
+            background: var(--rosa-fundo);
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .voltar-btn {
+            background-color: var(--branco);
+            color: var(--rosa-principal);
+            text-decoration: none;
+            padding: 12px 50px;
+            border-radius: 50px;
+            margin-top: 40px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin: 30px auto 70px auto;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .btn-voltar-principal {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 160px;
+            max-width: 190px;
+            padding: 10px 16px;
+            background: var(--rosa-principal);
+            color: var(--branco);
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 8px 18px rgba(255, 183, 197, 0.18);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn-voltar-principal:hover {
+            transform: translateY(-2px) scale(1.02);
+            background: #e89bb0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="titulo-topo">Minha Checklist</div>
+
+    <div class="grid-cards" id="grid">
+        <div class="card card-add-novo" onclick="abrirModalAdd('tema')">
+            <span style="font-size: 4rem; color: var(--rosa-principal); line-height: 1;">+</span>
+            <p style="font-weight: 600;">Criar Novo Tema</p>
+        </div>
+    </div>
+
+    <div class="footer-links">
+        <a href="cronograma.html" class="btn-voltar-principal">Ver Cronograma</a>
+        <a href="index.html" class="btn-voltar-principal">Voltar ao início</a>
+    </div>
+
+    <div id="modalCoracao" class="modal-overlay">
+        <div class="coracao-form">
+            <div class="conteudo-modal">
+                <h2 id="modalTitulo"
+                    style="font-family: 'Dancing Script'; color: var(--rosa-principal); font-size: 2rem; margin: 0;">
+                    Novo Tema</h2>
+                <input type="text" id="inputGeral" placeholder="Escreva aqui...">
+                <button class="btn-confirmar" onclick="processarAcaoModal()">Confirmar</button>
+                <p onclick="fecharModais()" style="cursor:pointer; font-size: 0.8rem; margin-top: 10px; color: #ccc;">
+                    cancelar</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalApagar" class="modal-overlay">
+        <div class="modal-apagar">
+            <span class="lixeira-rosa">🗑️</span>
+            <h2 style="font-size: 1.3rem; margin: 0; color: #555;">Deseja apagar o tema?</h2>
+            <p id="nomeItemApagar" style="font-size: 0.9rem; color: var(--rosa-principal); margin: 10px 0;"></p>
+            <div class="botoes-confirmacao">
+                <button class="btn-confirmar" id="btnConfirmarApagar">Sim</button>
+                <button class="btn-cancelar" onclick="fecharModais()">Não</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tipoModalAtual = '', idCardAlvo = '', idApagarAlvo = '', tipoApagarAlvo = '';
+
+        document.addEventListener('DOMContentLoaded', carregarDados);
+
+        function abrirModalAdd(tipo, idCard = '') {
+            tipoModalAtual = tipo; idCardAlvo = idCard;
+            document.getElementById('modalTitulo').innerText = tipo === 'tema' ? "Novo Tema" : "Novo Subtítulo";
+            document.getElementById('modalCoracao').style.display = 'flex';
+            document.getElementById('inputGeral').focus();
+        }
+
+        function abrirModalApagar(tipo, id, nome) {
+            idApagarAlvo = id;
+            tipoApagarAlvo = tipo;
+            const titulo = document.querySelector('#modalApagar h2');
+            titulo.innerText = tipo === 'card' ? "Deseja apagar o tema?" : (tipo === 'sub' ? "Apagar este subtítulo?" : "Apagar esta tarefa?");
+            document.getElementById('nomeItemApagar').innerText = `"${nome}"`;
+
+            document.getElementById('btnConfirmarApagar').onclick = executarApagar;
+            document.getElementById('modalApagar').style.display = 'flex';
+        }
+
+        function fecharModais() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+            document.getElementById('inputGeral').value = '';
+        }
+
+        function processarAcaoModal() {
+            const valor = document.getElementById('inputGeral').value.trim();
+            if (!valor) return;
+            if (tipoModalAtual === 'tema') renderizarCard('card-' + Date.now(), valor, []);
+            else renderizarSubtituloDOM(idCardAlvo, 'sub-' + Date.now(), valor, []);
+            salvarDados(); fecharModais();
+        }
+
+        function executarApagar() {
+            document.getElementById(idApagarAlvo).remove();
+            salvarDados();
+            fecharModais();
+        }
+
+        function renderizarCard(id, tema, subtitulos) {
+            const card = document.createElement('div'); card.className = 'card'; card.id = id;
+            card.innerHTML = `
+                <button class="btn-del del-card" onclick="abrirModalApagar('card', '${id}', '${tema}')">×</button>
+                <div class="card-content">
+                    <h2 class="editavel-inline" onclick="ativarEdicao(this)">${tema}</h2>
+                    <div id="subs-${id}"></div>
+                </div>
+                <button class="btn-novo-subtitulo" onclick="abrirModalAdd('subtitulo', '${id}')">+ Adicionar Subtítulo</button>`;
+            document.getElementById('grid').insertBefore(card, document.getElementById('grid').firstChild);
+            subtitulos.forEach(s => renderizarSubtituloDOM(id, s.id, s.titulo, s.tarefas));
+        }
+
+        function renderizarSubtituloDOM(idCard, idSub, titulo, tarefas) {
+            const divSub = document.createElement('div'); divSub.className = 'secao-subtitulo'; divSub.id = idSub;
+            divSub.innerHTML = `
+                <button class="btn-del del-sub" onclick="abrirModalApagar('sub', '${idSub}', '${titulo}')">×</button>
+                <h3 class="editavel-inline" onclick="ativarEdicao(this)">${titulo}</h3>
+                <div class="input-item-group">
+                    <input type="text" id="input-${idSub}" placeholder="Nova tarefa...">
+                    <button class="btn-add-item" onclick="adicionarTarefa('${idSub}')">+</button>
+                </div>
+                <div id="lista-${idSub}"></div>`;
+            document.getElementById('subs-' + idCard).appendChild(divSub);
+            tarefas.forEach(t => adicionarTarefaDOM(idSub, t.id || 'task-' + Date.now() + Math.random(), t.texto, t.checked));
+        }
+
+        function adicionarTarefa(idSub) {
+            const input = document.getElementById('input-' + idSub);
+            if (input.value.trim()) {
+                adicionarTarefaDOM(idSub, 'task-' + Date.now(), input.value, false);
+                input.value = "";
+                salvarDados();
+            }
+        }
+
+        function adicionarTarefaDOM(idSub, idTask, texto, isChecked) {
+            const item = document.createElement('div');
+            item.className = 'item-check';
+            item.id = idTask;
+            item.innerHTML = `
+                <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="salvarDados()">
+                <span class="editavel-inline" onclick="ativarEdicao(this)">${texto}</span>
+                <button class="btn-del del-tarefa" onclick="abrirModalApagar('task', '${idTask}', '${texto}')">×</button>`;
+            document.getElementById('lista-' + idSub).appendChild(item);
+        }
+
+        function ativarEdicao(el) {
+            const txt = el.innerText, input = document.createElement('input');
+            input.value = txt; el.replaceWith(input); input.focus();
+            input.onblur = () => { el.innerText = input.value || txt; input.replaceWith(el); salvarDados(); };
+        }
+
+        function salvarDados() {
+            const data = [];
+            document.querySelectorAll('.card:not(.card-add-novo)').forEach(card => {
+                const subs = [];
+                card.querySelectorAll('.secao-subtitulo').forEach(sub => {
+                    const tarefas = [];
+                    sub.querySelectorAll('.item-check').forEach(i => tarefas.push({
+                        id: i.id, texto: i.querySelector('span').innerText, checked: i.querySelector('input').checked
+                    }));
+                    subs.push({ id: sub.id, titulo: sub.querySelector('h3').innerText, tarefas });
+                });
+                data.push({ id: card.id, tema: card.querySelector('h2').innerText, subtitulos: subs });
+            });
+            localStorage.setItem('checklistV4', JSON.stringify(data));
+        }
+
+        function carregarDados() {
+            const salvos = JSON.parse(localStorage.getItem('checklistV4') || '[]');
+            salvos.reverse().forEach(d => renderizarCard(d.id, d.tema, d.subtitulos));
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudo - Cronograma</title>
+    <style>
+        :root {
+            --rosa-fundo: #fdf2f5;
+            --rosa-principal: #ffb7c5;
+            --marrom-suave: #8b5e5e;
+            --branco: #ffffff;
+            --cinza-claro: #eee;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #fcf8f9;
+            background-image: radial-gradient(#f9d8e0 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--marrom-suave);
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: var(--rosa-principal);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1rem;
+            color: #7b5a5a;
+        }
+
+        .card {
+            background: var(--branco);
+            border-radius: 40px;
+            padding: 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            border: 2px solid var(--rosa-fundo);
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            color: #333;
+            margin-bottom: 18px;
+            text-align: center;
+            border-bottom: 2px solid var(--rosa-fundo);
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--marrom-suave);
+        }
+
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--rosa-fundo);
+            border-radius: 15px;
+            font-size: 0.95rem;
+            background-color: #fffafa;
+            color: #5f4549;
+            outline: none;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            border-color: var(--rosa-principal);
+            box-shadow: 0 0 8px rgba(255, 183, 197, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--rosa-principal);
+            color: var(--branco);
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            background: #e89bb0;
+            transform: translateY(-1px);
+        }
+
+        .topo-acao {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            align-items: flex-end;
+        }
+
+        .info {
+            margin-top: 12px;
+            color: #7b5a5a;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .status-semana {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .cronograma-grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        @media (min-width: 720px) {
+            .cronograma-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (min-width: 1080px) {
+            .cronograma-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        .modulo {
+            font-weight: 700;
+            color: #42343a;
+            margin: 16px 0 12px;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .tarefa-dia {
+            font-size: 0.9rem;
+            color: #6e5256;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            font-style: italic;
+        }
+
+        .status-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+        }
+
+        .status-group label {
+            font-size: 0.9rem;
+            color: #7b5a5a;
+            font-weight: 600;
+        }
+
+        .status-group select,
+        .status-group textarea {
+            width: 100%;
+            border: 1px solid var(--rosa-fundo);
+            border-radius: 16px;
+            padding: 10px 12px;
+            background: #fffafa;
+            color: #5f4549;
+            outline: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .status-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .mensagem {
+            margin-top: 18px;
+            color: var(--marrom-suave);
+            font-weight: 600;
+        }
+
+        .btn-voltar-principal {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            padding: 12px 20px;
+            margin: 0 auto;
+            background: var(--rosa-principal);
+            color: var(--branco);
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 8px 18px rgba(255, 183, 197, 0.18);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn-voltar-principal:hover {
+            transform: translateY(-2px) scale(1.01);
+            background: #e89bb0;
+        }
+
+        .lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .item-meta {
+            background: #fffafa;
+            border: 2px solid var(--rosa-fundo);
+            border-radius: 30px;
+            padding: 22px;
+            margin-bottom: 18px;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.03);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .item-meta-conteudo strong {
+            color: #3e2d32;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 1.1rem;
+        }
+
+        .item-meta-conteudo p {
+            color: #6e5256;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .item-meta-conteudo small {
+            color: var(--rosa-principal);
+            font-weight: 600;
+        }
+
+        .btn-excluir {
+            background: var(--rosa-fundo);
+            color: var(--marrom-suave);
+            border: none;
+            border-radius: 18px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 700;
+            transition: background 0.3s, transform 0.2s;
+            align-self: flex-start;
+        }
+
+        .btn-excluir:hover {
+            background: var(--rosa-principal);
+            color: var(--branco);
+            transform: translateY(-1px);
+        }
+
+        .semana-card {
+            background: #fffefc;
+            border-radius: 30px;
+            padding: 18px;
+            margin-top: 12px;
+            border: 1px dashed var(--rosa-fundo);
+        }
+
+        .semana-card h4 {
+            font-size: 1rem;
+            color: var(--marrom-suave);
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .semana-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .semana-grid {
+                grid-template-columns: repeat(7, 1fr);
+            }
+        }
+
+        .dia-card {
+            background: var(--branco);
+            padding: 12px;
+            border-radius: 18px;
+            border: 1px solid var(--cinza-claro);
+            text-align: center;
+        }
+
+        .dia-card h5 {
+            font-size: 0.85rem;
+            color: var(--rosa-principal);
+            margin-bottom: 8px;
+        }
+
+        .dia-card input {
+            width: 100%;
+            border: none;
+            border-bottom: 1px dashed var(--rosa-principal);
+            background: transparent;
+            padding: 6px 0;
+            font-size: 0.85rem;
+            color: #5f4549;
+            outline: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Meu Cronograma de Estudos</h1>
+            <p>Use os temas e módulos da checklist para organizar seu estudo por semanas temáticas.</p>
+        </header>
+
+        <section class="card">
+            <h2>Planejamento Semanal</h2>
+            <div class="topo-acao">
+                <div class="input-group">
+                    <label for="tema-select">Tema da checklist</label>
+                    <select id="tema-select"></select>
+                </div>
+                <button class="btn" id="btn-montar">Montar cronograma</button>
+            </div>
+            <p class="info">Cada semana é dedicada a um módulo diferente da checklist. As tarefas do módulo são distribuídas pelos dias úteis, e os finais de semana ficam abertos para revisão ou descanso.</p>
+        </section>
+
+        <section class="card" id="cronograma-card" style="display: none;">
+            <div class="status-semana" id="status-semana">
+                <div>Semana <span id="semana-numero">1</span> • <strong id="tema-atual"></strong></div>
+                <button class="btn" id="btn-concluir-semana">Semana concluída</button>
+            </div>
+            <div class="cronograma-grid" id="cronograma-grid"></div>
+            <div class="mensagem" id="mensagem-semana"></div>
+        </section>
+
+        <a href="checklist.html" class="btn-voltar-principal">Voltar à checklist</a>
+        <a href="index.html" class="btn-voltar-principal">Voltar ao início</a>
+    </div>
+
+    <script>
+        const diasSemana = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+        const checklistKey = 'checklistV4';
+        const cronogramaKey = 'cronogramaV1';
+        let cronogramaState = { selectedThemeId: '', weekNumber: 1, assignments: [] };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('btn-montar').addEventListener('click', montarCronograma);
+            document.getElementById('btn-concluir-semana').addEventListener('click', concluirSemana);
+            carregarDados();
+        });
+
+        function carregarDados() {
+            carregarTemasChecklist();
+            const salvo = JSON.parse(localStorage.getItem(cronogramaKey) || 'null');
+            if (salvo) {
+                cronogramaState = salvo;
+            }
+            if (cronogramaState.selectedThemeId) {
+                montarCronograma();
+            }
+        }
+
+        function carregarTemasChecklist() {
+            const temas = JSON.parse(localStorage.getItem(checklistKey) || '[]');
+            const select = document.getElementById('tema-select');
+            select.innerHTML = '';
+
+            if (!temas.length) {
+                select.innerHTML = '<option>Nenhum tema encontrado</option>';
+                select.disabled = true;
+                document.getElementById('btn-montar').disabled = true;
+                document.getElementById('mensagem-semana').innerText = 'Adicione temas na checklist para montar seu cronograma.';
+                return;
+            }
+
+            temas.forEach(tema => {
+                const option = document.createElement('option');
+                option.value = tema.id;
+                option.textContent = tema.tema;
+                select.appendChild(option);
+            });
+
+            const temaExiste = temas.some(tema => tema.id === cronogramaState.selectedThemeId);
+            select.value = temaExiste ? cronogramaState.selectedThemeId : temas[0].id;
+            if (!temaExiste) {
+                cronogramaState.selectedThemeId = temas[0].id;
+                cronogramaState.weekNumber = 1;
+                cronogramaState.assignments = [];
+            }
+        }
+
+        function montarCronograma() {
+            const temaId = document.getElementById('tema-select').value;
+            const temas = JSON.parse(localStorage.getItem(checklistKey) || '[]');
+            const tema = temas.find(item => item.id === temaId);
+            if (!tema) return;
+
+            if (cronogramaState.selectedThemeId !== temaId) {
+                // Tema mudou, reinicia do módulo 1
+                cronogramaState.selectedThemeId = temaId;
+                cronogramaState.weekNumber = 1;
+            }
+
+            // Sempre recria as atribuições baseado no módulo atual
+            cronogramaState.assignments = criarAtribuicoes(tema);
+            renderizarCronograma(tema);
+            salvarCronograma();
+        }
+
+        function criarAtribuicoes(tema) {
+            const modulos = tema.subtitulos;
+            const moduloAtual = modulos[cronogramaState.weekNumber - 1];
+
+            if (!moduloAtual) {
+                // Se não há mais módulos, retorna dias vazios
+                return diasSemana.map(dia => ({
+                    dia,
+                    modulo: 'Finalizado!',
+                    tarefa: 'Você completou todos os módulos.',
+                    status: 'concluído',
+                    nota: ''
+                }));
+            }
+
+            // Para o módulo atual, distribui as tarefas pelos dias da semana
+            const tarefas = moduloAtual.tarefas || [];
+            const tarefasPorDia = Math.ceil(tarefas.length / 5); // Distribui pelas 5 primeiras tarefas pelos dias úteis
+
+            return diasSemana.map((dia, index) => {
+                let tarefa = '';
+                let status = 'não concluído';
+
+                if (index < 5) { // Dias úteis (segunda a sexta)
+                    const tarefasDoDia = tarefas.slice(index * tarefasPorDia, (index + 1) * tarefasPorDia);
+                    tarefa = tarefasDoDia.map(t => t.texto).join(' • ') || `Estudar ${moduloAtual.titulo}`;
+                } else { // Finais de semana
+                    tarefa = 'Revisão ou descanso';
+                    status = 'aberto';
+                }
+
+                return {
+                    dia,
+                    modulo: moduloAtual.titulo,
+                    tarefa,
+                    status,
+                    nota: ''
+                };
+            });
+        }
+
+        function renderizarCronograma(tema) {
+            document.getElementById('cronograma-card').style.display = 'block';
+            const statusArea = document.getElementById('status-semana');
+            const grid = document.getElementById('cronograma-grid');
+            const mensagem = document.getElementById('mensagem-semana');
+            const modulos = tema.subtitulos;
+            const moduloAtual = modulos[cronogramaState.weekNumber - 1];
+
+            if (!moduloAtual) {
+                statusArea.style.display = 'none';
+                grid.style.display = 'none';
+                mensagem.innerText = 'Finalizado!';
+                return;
+            }
+
+            statusArea.style.display = 'flex';
+            grid.style.display = 'grid';
+            document.getElementById('tema-atual').innerText = tema.tema;
+            document.getElementById('semana-numero').innerText = cronogramaState.weekNumber;
+            grid.innerHTML = '';
+
+            cronogramaState.assignments.forEach((item, indice) => {
+                const card = document.createElement('div');
+                card.className = 'dia-card';
+
+                const titulo = document.createElement('h5');
+                titulo.textContent = item.dia;
+                const modulo = document.createElement('div');
+                modulo.className = 'modulo';
+                modulo.textContent = item.modulo;
+
+                const tarefa = document.createElement('div');
+                tarefa.className = 'tarefa-dia';
+                tarefa.textContent = item.tarefa;
+
+                const statusGroup = document.createElement('div');
+                statusGroup.className = 'status-group';
+
+                const labelStatus = document.createElement('label');
+                labelStatus.textContent = 'Status do dia';
+                const select = document.createElement('select');
+                ['não concluído', 'concluído', 'aberto'].forEach(valor => {
+                    const option = document.createElement('option');
+                    option.value = valor;
+                    option.textContent = valor;
+                    if (valor === item.status) option.selected = true;
+                    select.appendChild(option);
+                });
+                select.addEventListener('change', () => {
+                    item.status = select.value;
+                    salvarCronograma();
+                });
+
+                const labelNota = document.createElement('label');
+                labelNota.textContent = 'Dificuldade / anotação';
+                const textarea = document.createElement('textarea');
+                textarea.placeholder = 'Anote o que foi difícil ou o que precisa revisar...';
+                textarea.value = item.nota;
+                textarea.addEventListener('input', () => {
+                    item.nota = textarea.value;
+                    salvarCronograma();
+                });
+
+                statusGroup.append(labelStatus, select, labelNota, textarea);
+                card.append(titulo, modulo, tarefa, statusGroup);
+                grid.appendChild(card);
+            });
+
+            const totalModulos = modulos.length;
+            mensagem.innerText = `Módulo ${cronogramaState.weekNumber} de ${totalModulos}: ${moduloAtual.titulo}`;
+        }
+
+        function concluirSemana() {
+            const temas = JSON.parse(localStorage.getItem(checklistKey) || '[]');
+            const tema = temas.find(item => item.id === cronogramaState.selectedThemeId);
+
+            if (!tema) return;
+
+            // Avança para o próximo módulo
+            cronogramaState.weekNumber += 1;
+
+            // Recria as atribuições para o novo módulo
+            cronogramaState.assignments = criarAtribuicoes(tema);
+            salvarCronograma();
+
+            const mensagem = document.getElementById('mensagem-semana');
+            const modulos = tema.subtitulos;
+            const moduloAtual = modulos[cronogramaState.weekNumber - 1];
+
+            if (moduloAtual) {
+                mensagem.innerText = `Semana concluída! Agora você está no Módulo ${cronogramaState.weekNumber}: ${moduloAtual.titulo}`;
+            } else {
+                mensagem.innerText = 'Finalizado!';
+            }
+
+            renderizarCronograma(tema);
+        }
+
+        function salvarCronograma() {
+            localStorage.setItem(cronogramaKey, JSON.stringify(cronogramaState));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudo - Bloco de Notas</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Caveat&family=Dancing+Script&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* quebra a barra de notificação nem tentar ajustar as cores. */
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --rosa-fundo: #FDF2F5;
+            --rosa-claro: #FCE4EC;
+            --rosa-barra: #FFB7C5;
+            --rosa-detalhe: #FF5CAB;
+            --rosa-principal: #DB7093;
+            --marrom: #5D400B;
+            --cinza-painel: #FFFFFF;
+            --marrom-claro: #B08A5F;
+            --branco: #FFFFFF;
+        }
+
+        html {
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--rosa-fundo);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+        }
+
+        .fundo-poa {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--rosa-fundo);
+            background-image: radial-gradient(#D6A2B8 15%, transparent 16%);
+            background-size: 24px 24px;
+            z-index: 0;
+        }
+
+        .container-app {
+            position: relative;
+            z-index: 1;
+            width: 95%;
+            max-width: 920px;
+            height: 90vh;
+            background: #FFFFFF;
+            border-radius: 40px;
+            box-shadow: 0 8px 25px rgba(214, 162, 184, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 3px solid var(--rosa-barra);
+        }
+
+        /* TELA DE PASTAS */
+        #telaPastas {
+            padding: 30px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .topo-pesquisa {
+            background: #FFF0F3;
+            padding: 15px 25px;
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--rosa-barra);
+            position: relative;
+        }
+
+        .topo-pesquisa span.icone-pesquisa {
+            position: absolute;
+            left: 25px;
+            font-size: 1.2rem;
+        }
+
+        .topo-pesquisa h1 {
+            color: #DB7093;
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .grid-pastas {
+            flex: 1;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            padding: 10px 5px;
+            align-items: start;
+            min-height: 400px;
+            align-content: start;
+        }
+
+        .lista-vazia {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #B2A4A8;
+            font-size: 1.1rem;
+            min-height: 350px;
+            font-style: italic;
+        }
+
+        .pasta-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 20px;
+            min-height: 120px;
+            justify-content: center;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .pasta-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .carta-icone-container {
+            width: 68px;
+            height: 68px;
+            background: #FFF;
+            border-radius: 12px;
+            border: 1px solid #FFE4E8;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carta-icone-container:after {
+            content: "";
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            right: 5px;
+            top: 25px;
+            border-bottom: 1.5px solid #EAE0E1;
+            box-shadow: 0 4px 0 #EAE0E1, 0 8px 0 #EAE0E1, 0 12px 0 #EAE0E1;
+        }
+
+        .coracao-pequeno {
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.3rem;
+            color: #DB7093;
+            z-index: 2;
+        }
+
+        .pasta-nome {
+            font-weight: 300;
+            color: #555;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        /* Modal Coração (Adicionar e Excluir) */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .coracao-form {
+            background: var(--branco);
+            width: 320px;
+            height: 320px;
+            position: relative;
+            transform: rotate(-45deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(255, 183, 197, 0.4);
+            border-radius: 20px 20px 0 20px;
+        }
+
+        .coracao-form::before,
+        .coracao-form::after {
+            content: "";
+            background-color: var(--branco);
+            border-radius: 50%;
+            width: 320px;
+            height: 320px;
+            position: absolute;
+        }
+
+        .coracao-form::before {
+            top: -160px;
+            left: 0;
+        }
+
+        .coracao-form::after {
+            left: 160px;
+            top: 0;
+        }
+
+        .conteudo-modal {
+            position: relative;
+            z-index: 10;
+            transform: rotate(45deg);
+            text-align: center;
+            width: 85%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .conteudo-modal input {
+            width: 90%;
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid var(--rosa-principal);
+            border-radius: 15px;
+            outline: none;
+            text-align: center;
+        }
+
+        .botoes-confirmacao {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .btn-confirmar {
+            background: var(--rosa-principal);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            min-width: 100px;
+            transition: 0.3s;
+        }
+
+        .btn-cancelar {
+            background: #f5f5f5;
+            color: #999;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            min-width: 100px;
+        }
+
+        .btn-confirmar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 10px rgba(255, 183, 197, 0.4);
+        }
+
+        .card-add-novo {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 3px dashed var(--rosa-principal);
+            background: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            min-height: 300px;
+            border-radius: 40px;
+            transition: 0.3s;
+        }
+
+        .card-add-novo:hover {
+            background: var(--branco);
+            transform: translateY(-5px);
+        }
+
+        .editavel-inline:hover {
+            background: var(--rosa-fundo);
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .voltar-btn {
+            background-color: var(--branco);
+            color: var(--rosa-claro);
+            text-decoration: none;
+            padding: 12px 50px;
+            border-radius: 50px;
+            margin-top: 40px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* EDITOR */
+        #painelEditor {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 40px;
+        }
+
+        .header-editor {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1.5px solid #FFE4E8;
+        }
+
+        .titulo-input {
+            font-family: 'Caveat', cursive;
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #5D400B;
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 55%;
+        }
+
+        .container-icones-editor {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .tool-editor {
+            cursor: pointer;
+            font-size: 1.6rem;
+            padding: 6px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .tool-editor:hover {
+            background: #FFF0F3;
+            transform: scale(1.1);
+        }
+
+        .tool-delete {
+            color: #D32F2F;
+        }
+
+        .tool-delete:hover {
+            background: #FFCDD2;
+        }
+
+        .folha-container {
+            flex: 1;
+            overflow-y: auto;
+            margin: 25px 0;
+            padding: 20px;
+            border: 1.5px solid #FFE4E8;
+            border-radius: 25px;
+            background: #FFF;
+        }
+
+        .folha {
+            width: 100%;
+            min-height: 340px;
+            outline: none;
+            line-height: 44px;
+            font-size: 19px;
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+            background: transparent;
+        }
+
+        [contenteditable]:empty:before {
+            content: attr(data-placeholder);
+            color: #B0A8A9;
+            pointer-events: none;
+        }
+
+        .footer-editor {
+            display: none;
+            justify-content: space-around;
+            background: #FCE4EC;
+            padding: 14px 8px;
+            border-radius: 24px;
+            margin-top: 5px;
+        }
+
+        .tool-footer {
+            cursor: pointer;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            color: #5D400B;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .tool-footer:hover {
+            background: #FFB7C5;
+        }
+
+        .btn-add-container {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            z-index: 10;
+        }
+
+        .btn-add {
+            width: 100%;
+            height: 100%;
+            background: #FFF;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(214, 162, 184, 0.4);
+            border: 1.5px solid var(--rosa-barra);
+            cursor: pointer;
+            font-size: 2.2rem;
+            color: #DB7093;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add:hover {
+            background: #FFB7C5;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .btn-voltar-principal {
+            display: block;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            padding: 12px 20px;
+            margin: 18px auto 0 auto;
+            background: #fab2ca;
+            color: #fff;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 8px 18px rgba(219, 112, 147, 0.18);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .btn-voltar-principal:hover {
+            transform: translateY(-2px);
+            background: #ffecf4;
+        }
+
+        .notificacao {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.97);
+            color: #5D400B;
+            padding: 14px 22px;
+            border-radius: 999px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .notificacao.sucesso {
+            border: 1px solid #B08A5F;
+        }
+
+        .notificacao.erro {
+            border: 1px solid #D32F2F;
+            color: #D32F2F;
+        }
+
+        @media (max-width: 768px) {
+            .grid-pastas {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="fundo-poa"></div>
+
+    <div class="container-app">
+        <div id="telaPastas">
+            <div class="topo-pesquisa">
+                <span class="icone-pesquisa">🔍</span>
+                <h1>Pesquisa</h1>
+            </div>
+
+            <div class="grid-pastas" id="containerPastas"></div>
+
+            <div class="btn-voltar-principal" onclick="window.location.href='index.html'">Voltar ao início</div>
+
+            <div class="btn-add-container">
+                <div class="btn-add" onclick="abrirModalAdd()">+</div>
+            </div>
+        </div>
+
+        <div id="modalCoracao" class="modal-overlay">
+            <div class="coracao-form">
+                <div class="conteudo-modal">
+                    <h2 id="modalTitulo"
+                        style="font-family: 'Dancing Script'; color: var(--rosa-principal); font-size: 1.8rem; margin: 0;">
+                        Novo Tema</h2>
+                    <input type="text" id="inputGeral" placeholder="Nome da nova pasta...">
+                    <button class="btn-confirmar" onclick="processarAcaoModal()">Confirmar</button>
+                    <p onclick="fecharModais()"
+                        style="cursor:pointer; font-size: 0.8rem; margin-top: 10px; color: #aaa;">
+                        cancelar</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalApagar" class="modal-overlay">
+            <div class="coracao-form">
+                <div class="conteudo-modal">
+                    <h2 id="modalTituloApagar"
+                        style="font-family: 'Dancing Script'; color: var(--rosa-principal); font-size: 1.6rem; margin: 0;">
+                        Excluir pasta?</h2>
+                    <p id="nomeItemApagar" style="font-size: 0.9rem; color: var(--rosa-principal); margin: 10px 0;"></p>
+                    <button class="btn-confirmar" id="btnConfirmarApagar" onclick="deletarPasta()">Confirmar</button>
+                    <p onclick="fecharModais()"
+                        style="cursor:pointer; font-size: 0.8rem; margin-top: 12px; color: #aaa;">
+                        cancelar</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="painelEditor">
+            <div class="header-editor">
+                <input type="text" class="titulo-input" id="tituloNota" placeholder="Título">
+                <div class="container-icones-editor">
+                    <span class="tool-editor" onclick="abrirSeletorCor()">🎨</span>
+                    <span class="tool-editor" onclick="toggleBarraFormatacao()">✏️</span>
+                    <span class="tool-editor tool-delete" onclick="abrirModalApagar()">🗑️</span>
+                    <span class="tool-editor" onclick="voltarParaPastas()">✨</span>
+                </div>
+            </div>
+
+            <div class="folha-container">
+                <div class="folha" id="areaTexto" contenteditable="true" spellcheck="false" data-placeholder="nota...">
+                </div>
+            </div>
+
+            <div class="footer-editor" id="barraFormatacao">
+                <span class="tool-footer" onmousedown="event.preventDefault()"
+                    onclick="formatar('bold')"><b>B</b></span>
+                <span class="tool-footer" onmousedown="event.preventDefault()"
+                    onclick="formatar('italic')"><i>I</i></span>
+                <span class="tool-footer" onmousedown="event.preventDefault()"
+                    onclick="formatar('underline')"><u>U</u></span>
+                <span class="tool-footer" onmousedown="event.preventDefault()"
+                    onclick="formatar('strikeThrough')"><s>S</s></span>
+            </div>
+        </div>
+
+        <script>
+            let pastas = JSON.parse(localStorage.getItem('cadernos_notas_coquette')) || [];
+            let idAtivo = null;
+
+            function renderizar() {
+                const grid = document.getElementById('containerPastas');
+                grid.innerHTML = '';
+
+                if (pastas.length === 0) {
+                    grid.innerHTML = `<div class="lista-vazia">Nenhuma pasta ainda 💕</div>`;
+                } else {
+                    pastas.forEach((p, i) => {
+                        grid.innerHTML += `
+                        <div class="pasta-item" onclick="abrirEditor(${i})">
+                            <div class="carta-icone-container">
+                                <span class="coracao-pequeno">♥</span>
+                            </div>
+                            <div class="pasta-nome">${p.nome}</div>
+                        </div>`;
+                    });
+                }
+            }
+
+            function novaPasta() {
+                abrirModalAdd();
+            }
+
+            function abrirModalAdd() {
+                document.getElementById('modalTitulo').innerText = 'Diga o nome da pasta';
+                document.getElementById('inputGeral').value = '';
+                document.getElementById('modalCoracao').style.display = 'flex';
+                document.getElementById('inputGeral').focus();
+            }
+
+            function processarAcaoModal() {
+                const nome = document.getElementById('inputGeral').value.trim();
+                if (!nome) return;
+                pastas.push({ nome, conteudo: "", titulo: nome, corFundo: "#FFFFFF" });
+                salvar();
+                renderizar();
+                fecharModais();
+                mostrarNotificacao('Pasta criada com sucesso!', 'sucesso');
+            }
+
+            function abrirEditor(index) {
+                idAtivo = index;
+                document.getElementById('telaPastas').style.display = 'none';
+                document.getElementById('painelEditor').style.display = 'flex';
+
+                document.getElementById('tituloNota').value = pastas[index].titulo;
+                document.getElementById('areaTexto').innerHTML = pastas[index].conteudo;
+                document.getElementById('painelEditor').style.backgroundColor = pastas[index].corFundo;
+
+                document.getElementById('barraFormatacao').style.display = 'none';
+                document.getElementById('areaTexto').focus();
+            }
+
+            function voltarParaPastas() {
+                if (idAtivo !== null) {
+                    pastas[idAtivo].conteudo = document.getElementById('areaTexto').innerHTML;
+                    pastas[idAtivo].titulo = document.getElementById('tituloNota').value;
+                    pastas[idAtivo].corFundo = document.getElementById('painelEditor').style.backgroundColor;
+                    salvar();
+                    renderizar();
+                }
+
+                document.getElementById('telaPastas').style.display = 'flex';
+                document.getElementById('painelEditor').style.display = 'none';
+            }
+
+            function abrirModalApagar() {
+                if (idAtivo === null) return;
+                document.getElementById('nomeItemApagar').innerText = `"${pastas[idAtivo].nome}"`;
+                document.getElementById('modalApagar').style.display = 'flex';
+            }
+
+            function deletarPasta() {
+                if (idAtivo !== null) {
+                    pastas.splice(idAtivo, 1);
+                    salvar();
+                    idAtivo = null;
+                    document.getElementById('telaPastas').style.display = 'flex';
+                    document.getElementById('painelEditor').style.display = 'none';
+                    renderizar();
+                    fecharModais();
+                    mostrarNotificacao('Pasta excluída com sucesso!', 'sucesso');
+                }
+            }
+
+            function fecharModais() {
+                document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+                document.getElementById('inputGeral').value = '';
+            }
+
+            function mostrarNotificacao(texto, tipo = 'info') {
+                const alerta = document.getElementById('notificacao');
+                alerta.textContent = texto;
+                alerta.className = 'notificacao ' + tipo;
+                alerta.style.opacity = '1';
+                alerta.style.transform = 'translateX(-50%) translateY(0)';
+                clearTimeout(window._notificacaoTimer);
+                window._notificacaoTimer = setTimeout(() => {
+                    alerta.style.opacity = '0';
+                    alerta.style.transform = 'translateX(-50%) translateY(12px)';
+                }, 2800);
+            }
+
+            function formatar(cmd, arg = null) {
+                const area = document.getElementById('areaTexto');
+                if (document.activeElement !== area) {
+                    area.focus();
+                }
+                document.execCommand(cmd, false, arg);
+            }
+
+            function abrirSeletorCor() {
+                let cor = prompt("Escolha uma cor:", "#FFFFFF");
+                if (cor) {
+                    document.getElementById('painelEditor').style.backgroundColor = cor;
+                }
+            }
+
+            function toggleBarraFormatacao() {
+                const barra = document.getElementById('barraFormatacao');
+                barra.style.display = barra.style.display === 'flex' ? 'none' : 'flex';
+            }
+
+            function salvar() {
+                localStorage.setItem('cadernos_notas_coquette', JSON.stringify(pastas));
+            }
+
+            renderizar();
+        </script>
+        <div id="notificacao" class="notificacao"></div>
+</body>
+
+</html>
